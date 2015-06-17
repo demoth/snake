@@ -1,5 +1,3 @@
-import random
-
 # dimensions of screen
 WIDTH = 50
 HEIGHT = 20
@@ -35,10 +33,7 @@ class Snake:
 
     def draw(self, screen):
         for x, y in self.segments:
-            try:
-                screen[(x, y)] = '#'
-            except IndexError:
-                print (self.segments)
+            screen[(x, y)] = '#'
 
 
 snake = Snake()
