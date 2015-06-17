@@ -36,18 +36,15 @@ class Snake:
     def draw(self, screen):
         for x, y in self.segments:
             try:
-                screen[y][x] = '#'
+                screen[(x, y)] = '#'
             except IndexError:
                 print (self.segments)
 
 
 snake = Snake()
 
-def _clear_screen(screen):
-    screen[:] = [[' ' for x in range(WIDTH)] for y in range(HEIGHT)]
-
 def update(screen):
-    _clear_screen(screen)
+    screen.clear()
     snake.move()
     snake.draw(screen)
 

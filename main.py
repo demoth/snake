@@ -1,19 +1,43 @@
 import tkinter as tk
 import logic
 
-RUNNING = True
-
 START = '1.0'
 
-screen = [[' ' for x in range(logic.WIDTH)] for y in range(logic.HEIGHT)]
+class Screen:
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+        self.cells = {}
 
-def screen_to_str(scr):
-    return '\n'.join(''.join(line) for line in scr)
+    def clear(self):
+        self.cells = {}
+
+    def to_widget(self):
+        result = '\n'.join(''.join(self.cells.get((x, y), ' ')
+                                   for x in range(self.width))
+                           for y in range(self.height))
+        return result
+
+    def _boundary_check(self, point):
+        if not 0 <= point[0] < self.width:
+            raise ValueError()
+        if not 0 <= point[1] < self.height:
+            raise ValueError()
+
+    def __setitem__(self, key, value):
+        self._boundary_check(key)
+        self.cells[key] = value
+
+    def __getitem__(self, item):
+        self._boundary_check(item)
+        return self.cells.get(item, ' ')
+
+screen = Screen(logic.WIDTH, logic.HEIGHT)
 
 def draw(widget, screen):
     widget['state'] = 'normal'
     widget.delete('1.0', tk.END)
-    widget.insert('1.0', screen_to_str(screen))
+    widget.insert('1.0', screen.to_widget())
     widget['state'] = 'disabled'
 
 root = tk.Tk()
@@ -22,8 +46,7 @@ field.pack()
 draw(field, screen)
 
 def loop():
-    if RUNNING:
-        root.after(logic.RATE, loop)
+    root.after(logic.RATE, loop)
     logic.update(screen)
     draw(field, screen)
 
@@ -41,6 +64,7 @@ for key, func in callback_mapping.items():
     root.bind(key, func)
 
 root.bind('<Escape>', quit)
-loop()
-tk.mainloop()
-RUNNING = False
+
+if __name__ == '__main__':
+    loop()
+    tk.mainloop()
