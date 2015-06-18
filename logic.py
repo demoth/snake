@@ -53,6 +53,10 @@ def update(screen):
     snake.move()
     snake.draw(screen)
     food.draw(screen)
+    if (snake.x == food.x) and (snake.y == food.y):
+        food.x = random.randint(0, WIDTH - 1)
+        food.y = random.randint(0, HEIGHT - 1)
+        snake.length += 1
 
 def left(event):
     if snake.direction != (1, 0):
