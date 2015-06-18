@@ -26,6 +26,7 @@ class Screen:
 
     def __setitem__(self, key, value):
         self._boundary_check(key)
+        assert len(value) == 1
         self.cells[key] = value
 
     def __getitem__(self, item):
