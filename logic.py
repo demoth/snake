@@ -1,3 +1,5 @@
+import random
+
 # dimensions of screen
 WIDTH = 50
 HEIGHT = 20
@@ -35,13 +37,22 @@ class Snake:
         for x, y in self.segments:
             screen[(x, y)] = '#'
 
+class Food:
+    def __init__(self):
+        self.x = random.randint(0,WIDTH)
+        self.y = random.randint(0,HEIGHT)
+
+    def draw(self, screen):
+        screen[(self.x, self.y)] = '%'
 
 snake = Snake()
+food = Food()
 
 def update(screen):
     screen.clear()
     snake.move()
     snake.draw(screen)
+    food.draw(screen)
 
 def left(event):
     if snake.direction != (1, 0):
