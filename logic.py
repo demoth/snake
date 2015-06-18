@@ -33,17 +33,25 @@ class Snake:
         while len(self.segments) > self.length:
             self.segments.pop(0)
 
+    def eats(self, food):
+        if (self.x, self.y) == (food.x, food.y):
+            self.length += 1
+            food.respawn()
+
     def draw(self, screen):
         for x, y in self.segments:
             screen[(x, y)] = '#'
 
 class Food:
     def __init__(self):
-        self.x = random.randint(0, WIDTH - 1)
-        self.y = random.randint(0, HEIGHT - 1)
+        self.respawn()
 
     def draw(self, screen):
         screen[(self.x, self.y)] = '%'
+
+    def respawn(self):
+        self.x = random.randint(0, WIDTH - 1)
+        self.y = random.randint(0, HEIGHT - 1)
 
 snake = Snake()
 food = Food()
@@ -51,12 +59,9 @@ food = Food()
 def update(screen):
     screen.clear()
     snake.move()
+    snake.eats(food)
     snake.draw(screen)
     food.draw(screen)
-    if (snake.x == food.x) and (snake.y == food.y):
-        food.x = random.randint(0, WIDTH - 1)
-        food.y = random.randint(0, HEIGHT - 1)
-        snake.length += 1
 
 def left(event):
     if snake.direction != (1, 0):
