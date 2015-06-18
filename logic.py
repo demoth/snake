@@ -39,8 +39,8 @@ class Snake:
 
 class Food:
     def __init__(self):
-        self.x = random.randint(0,WIDTH)
-        self.y = random.randint(0,HEIGHT)
+        self.x = random.randint(0, WIDTH - 1)
+        self.y = random.randint(0, HEIGHT - 1)
 
     def draw(self, screen):
         screen[(self.x, self.y)] = '%'

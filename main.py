@@ -41,7 +41,7 @@ def draw(widget, screen):
     widget['state'] = 'disabled'
 
 root = tk.Tk()
-field = tk.Text(root, width=logic.WIDTH, height=logic.HEIGHT, state='disabled', font='monospace')
+field = tk.Text(root, width=logic.WIDTH, height=logic.HEIGHT, state='disabled', font='Courier')
 field.pack()
 draw(field, screen)
 
