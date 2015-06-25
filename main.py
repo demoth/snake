@@ -33,39 +33,69 @@ class Screen:
         self._boundary_check(item)
         return self.cells.get(item, ' ')
 
-screen = Screen(logic.WIDTH, logic.HEIGHT)
 
-def draw(widget, screen):
-    widget['state'] = 'normal'
-    widget.delete('1.0', tk.END)
-    widget.insert('1.0', screen.to_widget())
-    widget['state'] = 'disabled'
+class GameWindow:
 
-root = tk.Tk()
-field = tk.Text(root, width=logic.WIDTH, height=logic.HEIGHT, state='disabled', font='Courier')
-field.pack()
-draw(field, screen)
+    def __init__(self):
+        self.field = None
+        self.looper = None
+        self.root = tk.Tk()
+        self.game_selector = tk.Frame(self.root)
+        self.game_selector.pack()
+        self.buttons = []
+        for game in logic.games:
+            self.buttons.append(self.create_button(self.game_selector, game))
+        self.root.mainloop()
 
-def loop():
-    root.after(logic.RATE, loop)
-    logic.update(screen)
-    draw(field, screen)
+    def create_button(self, widget, game):
+        text = "{}\n{}".format(game.__name__, game.__doc__)
 
-callback_mapping = {
-    '<Left>': logic.left,
-    '<Right>': logic.right,
-    '<Up>': logic.up,
-    '<Down>': logic.down,
-}
+        def start_game():
+            self.start_game(game)
 
-def quit(e):
-    root.destroy()
+        b = tk.Button(widget, text=text.strip(), command=start_game)
+        b.game_class = game
+        b.pack()
+        return b
 
-for key, func in callback_mapping.items():
-    root.bind(key, func)
+    def start_game(self, game):
+        #self.game_selector.pack_forget()
+        if self.field is not None:
+            self.field.pack_forget()
+        if self.looper is not None:
+            self.root.after_cancel(self.looper)
+        self.screen = Screen(game.WIDTH, game.HEIGHT)
+        self.game = game(self.screen)
+        self.field = tk.Text(self.root, width=self.game.WIDTH, height=self.game.HEIGHT, state='disabled', font='Courier')
+        self.field.pack()
+        self.draw()
 
-root.bind('<Escape>', quit)
+        callback_mapping = {
+            '<Left>': self.game.left,
+            '<Right>': self.game.right,
+            '<Up>': self.game.up,
+            '<Down>': self.game.down,
+        }
+
+        for key, func in callback_mapping.items():
+            self.root.bind(key, func)
+
+        self.root.bind('<Escape>', self.close)
+        self.loop()
+
+    def draw(self):
+        self.field['state'] = 'normal'
+        self.field.delete('1.0', tk.END)
+        self.field.insert('1.0', self.screen.to_widget())
+        self.field['state'] = 'disabled'
+
+    def loop(self):
+        self.looper = self.root.after(self.game.RATE, self.loop)
+        self.game.update()
+        self.draw()
+
+    def close(self, e):
+        self.root.destroy()
 
 if __name__ == '__main__':
-    loop()
-    tk.mainloop()
+    window = GameWindow()
